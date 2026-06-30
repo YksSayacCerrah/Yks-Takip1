@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YKS Sayaç 2027 | Premium Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    <style>
+        /* --- PREMIUM DESIGN SYSTEM (APPLE, STRIPE & TESLA INSPIRED) --- */
+        :root {
+            --bg-main: #030308;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #0c0a21 0%, #030308 100%);
+            --panel-bg: rgba(10, 10, 20, 0.6);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-blur: 20px;
+            
+            --color-tyt: #38bdf8;
+            --color-tyt-glow: rgba(56, 189, 248, 0.15);
+            --color-ayt: #a855f7;
+            --color-ayt-glow: rgba(168, 85, 247, 0.15);
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-glow: 0 0 20px rgba(255, 255, 255, 0.15);
+            
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: all 0.2s ease;
+        }
+
+        /* Variables for Settings Toggle */
+        body.no-blur .card, body.no-blur .panel, body.no-blur .motivation-container {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: rgba(15, 15, 25, 0.95) !important;
+        }
+        body.no-animations * {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            font-family: var(--font-family);
+            background: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- PRELOADER ANIMATION --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #030308;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .loader-ring {
+            width: 80px; height: 80px;
+            border: 2px solid rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            border-top: 2px solid var(--color-tyt);
+            border-right: 2px solid var(--color-ayt);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- BACKGROUND CANVAS & GLOW EFFECTS --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow-cursor {
+            position: fixed;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        /* --- MAIN LAYOUT STRUCTURE --- */
+        .dashboard-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealPage 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
+        }
+
+        @keyframes revealPage {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- PREMIUM CARD ARCHITECTURE --- */
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(var(--panel-blur));
+            -webkit-backdrop-filter: blur(var(--panel-blur));
+            border-radius: 24px;
+            padding: 32px;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- HEADER STRUCTURE --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .brand-zone {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .logo-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+            animation: pulseLogo 3s ease-in-out infinite;
+        }
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .brand-text h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brand-text p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .live-clock-panel {
+            text-align: right;
+        }
+        .live-clock-panel #live-time {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+        }
+        .live-clock-panel #live-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- MAIN COUNTER CARDS GRID --- */
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        .exam-card.tyt-zone:hover {
+            box-shadow: 0 25px 50px var(--color-tyt-glow);
+        }
+        .exam-card.ayt-zone:hover {
+            box-shadow: 0 25px 50px var(--color-ayt-glow);
+        }
+        .exam-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+        .tyt-zone .exam-badge {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--color-tyt);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        .ayt-zone .exam-badge {
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--color-ayt);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        /* Macro Countdown Elements */
+        .counter-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .time-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 16px 8px;
+            text-align: center;
+            position: relative;
+        }
+        .time-box .num {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: monospace;
+            background: linear-gradient(180deg, #fff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .time-box .lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* SVG Circular Ring Architecture */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 20px;
+        }
+        .progress-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .progress-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .circular-svg-wrap {
+            position: relative;
+            width: 72px; height: 72px;
+        }
+        .circular-svg-wrap svg {
+            transform: rotate(-90deg);
+            width: 72px; height: 72px;
+        }
+        .circular-svg-wrap circle {
+            fill: none;
+            stroke-width: 6;
+        }
+        .circular-svg-wrap .bg-ring {
+            stroke: rgba(255, 255, 255, 0.04);
+        }
+        .circular-svg-wrap .bar-ring {
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+        .tyt-zone .bar-ring { stroke: var(--color-tyt); filter: drop-shadow(0 0 4px var(--color-tyt)); }
+        .ayt-zone .bar-ring { stroke: var(--color-ayt); filter: drop-shadow(0 0 4px var(--color-ayt)); }
+        
+        .percentage-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px; font-weight: 700;
+            font-family: monospace;
+        }
+
+        /* --- GLOBAL PREMIUM METRIC BAR --- */
+        .global-progress-wrapper {
+            width: 100%;
+        }
+        .global-bar-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        .global-bar-meta span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .global-bar-meta #global-percent-val {
+            color: #fff;
+            font-family: monospace;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--color-tyt), var(--color-ayt));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .bar-container-outer {
+            width: 100%; height: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill-inner {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--color-tyt) 0%, var(--color-ayt) 100%);
+            border-radius: 100px;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            transition: width 0.1s linear;
+        }
+
+        /* --- METRICS & DASHBOARD STRIPE SECTION --- */
+        .dashboard-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #f1f5f9;
+            margin-bottom: -8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .metric-card {
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px;
+        }
+        .metric-card .m-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .metric-card .m-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: monospace;
+            color: #fff;
+            margin-top: 12px;
+        }
+
+        /* --- TWO COLUMN ANALYSIS & PROJECTIONS GRID --- */
+        .analysis-projection-area {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 24px;
+        }
+        
+        /* Stats Table Block */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .stats-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .stats-table td {
+            padding: 16px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .stats-table tr:last-child td {
+            border-bottom: none;
+        }
+        .hours-badge {
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--color-tyt);
+            background: rgba(56, 189, 248, 0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        /* Smart Timeline Cards */
+        .timeline-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 16px;
+        }
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 14px;
+        }
+        .timeline-item span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .timeline-item strong {
+            font-family: monospace;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        /* --- MOTIVATION ENGINE WITH LIVE REFRESH BUTTON --- */
+        .motivation-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 32px 40px;
+            background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.05) 0%, rgba(10,10,20,0.6) 100%);
+            gap: 24px;
+        }
+        .motivation-text-wrap {
+            flex: 1;
+        }
+        #motivation-text {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            line-height: 1.6;
+            min-height: 30px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .motivation-refresh-btn {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            flex-shrink: 0;
+        }
+        .motivation-refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .motivation-refresh-btn:active {
+            transform: scale(0.95);
+        }
+        .motivation-refresh-btn svg {
+            width: 20px; height: 20px;
+            fill: var(--text-muted);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .motivation-refresh-btn:hover svg {
+            fill: #fff;
+            transform: rotate(180deg);
+        }
+
+        /* --- FOOTER BANNER --- */
+        footer {
+            text-align: center;
+            padding: 16px 0 40px;
+            font-size: 13px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+        footer span {
+            color: #ef4444;
+            display: inline-block;
+            animation: pulseHeart 1.5s infinite;
+        }
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* --- SETTINGS ENGINE & FLOATING INTERFACE --- */
+        .settings-trigger {
+            position: fixed;
+            bottom: 32px; right: 32px;
+            width: 56px; height: 56px;
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: var(--transition-smooth);
+        }
+        .settings-trigger:hover {
+            transform: rotate(45deg) scale(1.05);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .settings-trigger svg {
+            width: 24px; height: 24px;
+            fill: #fff;
+        }
+
+        .settings-panel {
+            position: fixed;
+            bottom: 100px; right: 32px;
+            width: 340px;
+            background: rgba(10, 10, 18, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 24px;
+            z-index: 1000;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+        }
+        .settings-panel.active {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .settings-panel h3 {
+            font-size: 16px; font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 10px;
+        }
+        .config-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .config-row label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .config-row input[type="date"], .config-row select {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 10px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+        .toggle-row span {
+            font-size: 13px; color: #cbd5e1;
+        }
+        /* Switch styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px; height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .3s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--color-tyt); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* --- RESPONSIVE ENGINE (MOBILE OPTIMIZATION) --- */
+        @media(max-width: 1024px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .analysis-projection-area { grid-template-columns: 1fr; }
+        }
+        @media(max-width: 768px) {
+            .countdown-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .live-clock-panel { text-align: left; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .settings-panel { width: calc(100% - 48px); right: 24px; left: 24px; bottom: 90px; }
+            .motivation-container { padding: 24px; }
+        }
+        @media(max-width: 480px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .counter-display { gap: 8px; }
+            .time-box .num { font-size: 24px; }
+            .dashboard-wrapper { padding: 20px 16px; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-ring"></div>
+    </div>
+
+    <canvas id="bg-canvas"></canvas>
+    <div class="glow-cursor" id="glow-cursor"></div>
+
+    <div class="dashboard-wrapper">
+        
+        <header>
+            <div class="brand-zone">
+                <div class="logo-icon">🎓</div>
+                <div class="brand-text">
+                    <h1>YKS Sayaç 2027</h1>
+                    <p>Hedefe giden yolda anlık zaman analizi</p>
+                </div>
+            </div>
+            <div class="live-clock-panel">
+                <div id="live-time">00:00:00</div>
+                <div id="live-date">20 HAZİRAN 2027</div>
+            </div>
+        </header>
+
+        <section class="countdown-grid">
+            
+            <div class="card exam-card tyt-zone">
+                <div class="exam-badge">📘 TYT Geri Sayım</div>
+                <div class="counter-display" id="tyt-countdown">
+                    <div class="time-box"><div class="num" id="tyt-d">00</div><div class="lbl">Gün</div></div>
+                    <div class="time-box"><div class="num" id="tyt-h">00</div><div class="lbl">Saat</div></div>
+                    <div class="time-box"><div class="num" id="tyt-m">00</div><div class="lbl">Dk</div></div>
+                    <div class="time-box"><div class="num" id="tyt-s">00</div><div class="lbl">Sn</div></div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <h4>Sınav Dönemi İlerlemesi</h4>
+                        <p id="tyt-days-sub">Yolculuğun tamamlanan kısmı</p>
+                    </div>
+                    <div class="circular-svg-wrap">
+                        <svg>
+                            <circle class="bg-ring" cx="36" cy="36" r="32"/>
+                            <circle class="bar-ring" id="tyt-ring" cx="36" cy="36" r="32"/>
+                        </svg>
+                        <div class="percentage-text" id="tyt-ring-txt">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card exam-card ayt-zone">
+                <div class="exam-badge">📙 AYT Geri Sayım</div>
+                <div class="counter-display" id="ayt-countdown">
+                    <div class="time-box"><div class="num" id="ayt-d">00</div><div class="lbl">Gün</div></div>
+                    <div class="time-box"><div class="num" id="ayt-h">00</div><div class="lbl">Saat</div></div>
+                    <div class="time-box"><div class="num" id="ayt-m">00</div><div class="lbl">Dk</div></div>
+                    <div class="time-box"><div class="num" id="ayt-s">00</div><div class="lbl">Sn</div></div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <h4>Sınav Dönemi İlerlemesi</h4>
+                        <p id="ayt-days-sub">Yolculuğun tamamlanan kısmı</p>
+                    </div>
+                    <div class="circular-svg-wrap">
+                        <svg>
+                            <circle class="bg-ring" cx="36" cy="36" r="32"/>
+                            <circle class="bar-ring" id="ayt-ring" cx="36" cy="36" r="32"/>
+                        </svg>
+                        <div class="percentage-text" id="ayt-ring-txt">0%</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="card global-progress-wrapper">
+            <div class="global-bar-meta">
+                <span>2027 Genel Süre İlerleme Analizi</span>
+                <span id="global-percent-val">%0.00 Tamamlandı</span>
+            </div>
+            <div class="bar-container-outer">
+                <div class="bar-fill-inner" id="global-bar-fill"></div>
+            </div>
+        </div>
+
+        <h3 class="dashboard-section-title">📊 Gerçek Zamanlı Analiz Paneli</h3>
+        <section class="metrics-grid">
+            <div class="card metric-card"><div class="m-label">⏳ Kalan Toplam Gün</div><div class="m-value" id="m-days">0</div></div>
+            <div class="card metric-card"><div class="m-label">📅 Kalan Toplam Hafta</div><div class="m-value" id="m-weeks">0</div></div>
+            <div class="card metric-card"><div class="m-label">🗓 Kalan Toplam Ay</div><div class="m-value" id="m-months">0</div></div>
+            <div class="card metric-card"><div class="m-label">🧮 Toplam Kalan Saat</div><div class="m-value" id="m-hours">0</div></div>
+            <div class="card metric-card"><div class="m-label">⚡ Toplam Kalan Dakika</div><div class="m-value" id="m-mins">0</div></div>
+            <div class="card metric-card"><div class="m-label">⌛ Toplam Kalan Saniye</div><div class="m-value" id="m-secs">0</div></div>
+            <div class="card metric-card"><div class="m-label">📈 Tamamlanan Süre %</div><div class="m-value" id="m-p-comp">%0</div></div>
+            <div class="card metric-card"><div class="m-label">📉 Kalan Süre %</div><div class="m-value" id="m-p-rem">%0</div></div>
+        </section>
+
+        <div class="analysis-projection-area">
+            
+            <div class="card">
+                <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">⏰ Potansiyel Çalışma İstatistikleri (Saniyede Bir Akıyor)</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Bugünden sınava kadar günlük temponuza göre kazanabileceğiniz anlık küsuratlı toplam saat havuzu.</p>
+                <table class="stats-table">
+                    <thead>
+                        <tr><th>Günlük Tempo</th><th>Sınava Kadar Toplam Çalışma Süresi</th></tr>
+                    </thead>
+                    <tbody id="stats-table-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">🧠 Akıllı Zaman Analizi</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Gelecek senaryoları ve zaman kayıp projeksiyonları.</p>
+                <div class="timeline-wrapper">
+                    <div class="timeline-item"><span>Bugün çalışmazsanız kayıp (Saat)</span><strong style="color:#ef4444;" id="loss-today">24s</strong></div>
+                    <div class="timeline-item"><span>1 Hafta Sonra Kalan Gün</span><strong id="time-1w">0</strong></div>
+                    <div class="timeline-item"><span>30 Gün Sonra Kalan Gün</span><strong id="time-30d">0</strong></div>
+                    <div class="timeline-item"><span>100 Gün Sonra Kalan Gün</span><strong id="time-100d">0</strong></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card motivation-container">
+            <div class="motivation-text-wrap">
+                <div id="motivation-text">Yükleniyor...</div>
+            </div>
+            <div class="motivation-refresh-btn" id="motivation-btn" title="Sonraki Ayete Geç">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/>
+                </svg>
+            </div>
+        </div>
+
+        <footer>
+            Made with <span>❤️</span> for YKS 2027 Dashboard System
+        </footer>
+
+    </div>
+
+    <div class="settings-trigger" id="settings-btn" title="Ayarlar">
+        <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l-.38 2.65c-.03.24.17.42.42.42h4c.25 0 .46-.18.49-.42l-.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.57-3-3.5s1.07-3.5 3-3.5 3 1.57 3 3.5-1.07 3.5-3 3.5z"/></svg>
+    </div>
+
+    <div class="settings-panel" id="settings-panel">
+        <h3>Dashboard Ayarları</h3>
+        
+        <div class="config-row">
+            <label>TYT Sınav Tarihi</label>
+            <input type="date" id="cfg-tyt-date">
+        </div>
+        
+        <div class="config-row">
+            <label>AYT Sınav Tarihi</label>
+            <input type="date" id="cfg-ayt-date">
+        </div>
+
+        <div class="config-row">
+            <label>Dashboard Vurgu Teması</label>
+            <select id="cfg-theme">
+                <option value="default">Premium (Mavi & Mor)</option>
+                <option value="emerald">Cyber Emerald (Yeşil)</option>
+                <option value="sunset">Tesla Fire (Turuncu/Kırmızı)</option>
+            </select>
+        </div>
+
+        <div class="toggle-row">
+            <span>Ultra Akıcı Animasyonlar</span>
+            <label class="switch">
+                <input type="checkbox" id="cfg-anim" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <span>Stripe Cam Efektleri</span>
+            <label class="switch">
+                <input type="checkbox" id="cfg-blur" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * YKS SAYAÇ 2027 ENHANCED LIVE ENGINE
+         */
+        
+        // Sabitlenen Sınav Tarihleri: 20 Haziran 2027 10:00 ve 21 Haziran 2027 10:00
+        let CONFIG = {
+            tytDate: "2027-06-20T10:00:00",
+            aytDate: "2027-06-21T10:00:00",
+            cycleStart: "2026-06-01T00:00:00", 
+            animations: true,
+            blur: true,
+            theme: "default"
+        };
+
+        // Kur'an-ı Kerim'den Sabır ve Kararlılık Ayetleri Veri Havuzu
+        const SABIR_AYETLERI = [
+            { text: "Şüphesiz Allah, sabredenlerle beraberdir.", ref: "Bakara Suresi, 153. Ayet" },
+            { text: "Ey iman edenler! Sabredin, sabır yarışında düşmanlarınızı geçin, cihad için hazır ve rabıtalı olun.", ref: "Âl-i İmrân Suresi, 200. Ayet" },
+            { text: "Şüphesiz güçlükle beraber bir kolaylık vardır. Gerçekten, güçlükle beraber bir kolaylık vardır.", ref: "İnşirâh Suresi, 5-6. Ayet" },
+            { text: "Ancak sabredenlere mükafatları hesapsız ödenecektir.", ref: "Zümer Suresi, 10. Ayet" },
+            { text: "Rabbinin hükmüne sabret. Çünkü sen bizim gözetimimiz altındasın.", ref: "Tûr Suresi, 48. Ayet" },
+            { text: "Yavrum! Namazı dosdoğru kıl, iyiliği emret, kötülükten alıkoy ve başına gelene sabret. İşte bunlar, kararlılık gerektiren işlerdendir.", ref: "Lokmân Suresi, 17. Ayet" },
+            { text: "Sabret! Diye ki senin sabrın ancak Allah'ın yardımı iledir.", ref: "Nahl Suresi, 127. Ayet" },
+            { text: "Sabredenleri müjdele!", ref: "Bakara Suresi, 155. Ayet" },
+            { text: "Kim sabreder ve bağışlarsa, şüphesiz bu, azmedilmeye değer işlerdendir.", ref: "Şûrâ Suresi, 43. Ayet" },
+            { text: "Onların söylediklerine sabret ve güzelce, kırıp dökmeden onlardan ayrıl.", ref: "Müzzemmil Suresi, 10. Ayet" }
+        ];
+
+        let canvas, ctx, particles = [];
+        let mouseX = 0, mouseY = 0;
+        let currentQuoteIndex = 0;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            initCanvas();
+            initEventListeners();
+            startCalculationsEngine();
+            initMotivationEngine();
+            
+            setTimeout(() => {
+                const loader = document.getElementById('preloader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 600);
+        });
+
+        function loadConfig() {
+            const saved = localStorage.getItem('yks_2027_config');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    CONFIG = { ...CONFIG, ...parsed };
+                } catch(e) { console.error("Hafıza yüklenemedi."); }
+            }
+            
+            document.getElementById('cfg-tyt-date').value = CONFIG.tytDate.substring(0,10);
+            document.getElementById('cfg-ayt-date').value = CONFIG.aytDate.substring(0,10);
+            document.getElementById('cfg-anim').checked = CONFIG.animations;
+            document.getElementById('cfg-blur').checked = CONFIG.blur;
+            document.getElementById('cfg-theme').value = CONFIG.theme;
+
+            applySettingsToggles();
+        }
+
+        function saveConfig() {
+            localStorage.setItem('yks_2027_config', JSON.stringify(CONFIG));
+            applySettingsToggles();
+        }
+
+        function applySettingsToggles() {
+            document.body.classList.toggle('no-animations', !CONFIG.animations);
+            document.body.classList.toggle('no-blur', !CONFIG.blur);
+            
+            if (CONFIG.theme === 'emerald') {
+                document.documentElement.style.setProperty('--color-tyt', '#10b981');
+                document.documentElement.style.setProperty('--color-ayt', '#059669');
+                document.documentElement.style.setProperty('--color-tyt-glow', 'rgba(16, 185, 129, 0.15)');
+            } else if (CONFIG.theme === 'sunset') {
+                document.documentElement.style.setProperty('--color-tyt', '#f97316');
+                document.documentElement.style.setProperty('--color-ayt', '#dc2626');
+                document.documentElement.style.setProperty('--color-tyt-glow', 'rgba(249, 115, 22, 0.15)');
+            } else {
+                document.documentElement.style.setProperty('--color-tyt', '#38bdf8');
+                document.documentElement.style.setProperty('--color-ayt', '#a855f7');
+                document.documentElement.style.setProperty('--color-tyt-glow', 'rgba(56, 189, 248, 0.15)');
+            }
+        }
+
+        function initEventListeners() {
+            const btn = document.getElementById('settings-btn');
+            const panel = document.getElementById('settings-panel');
+            
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if(!panel.contains(e.target) && e.target !== btn) {
+                    panel.classList.remove('active');
+                }
+            });
+
+            document.getElementById('cfg-tyt-date').addEventListener('change', (e) => {
+                if(e.target.value) {
+                    CONFIG.tytDate = e.target.value + "T10:00:00";
+                    saveConfig();
+                }
+            });
+            document.getElementById('cfg-ayt-date').addEventListener('change', (e) => {
+                if(e.target.value) {
+                    CONFIG.aytDate = e.target.value + "T10:00:00";
+                    saveConfig();
+                }
+            });
+            document.getElementById('cfg-anim').addEventListener('change', (e) => {
+                CONFIG.animations = e.target.checked;
+                saveConfig();
+            });
+            document.getElementById('cfg-blur').addEventListener('change', (e) => {
+                CONFIG.blur = e.target.checked;
+                saveConfig();
+            });
+            document.getElementById('cfg-theme').addEventListener('change', (e) => {
+                CONFIG.theme = e.target.value;
+                saveConfig();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                const cursorGlow = document.getElementById('glow-cursor');
+                if (CONFIG.animations) {
+                    cursorGlow.style.left = mouseX + 'px';
+                    cursorGlow.style.top = mouseY + 'px';
+                }
+            });
+
+            // Manuel Değiştirme Butonu Dinleyicisi
+            document.getElementById('motivation-btn').addEventListener('click', () => {
+                shiftMotivationQuote(true);
+            });
+        }
+
+        function initCanvas() {
+            canvas = document.getElementById('bg-canvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            for(let i=0; i<40; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    alpha: Math.random() * 0.5 + 0.1
+                });
+            }
+            if (CONFIG.animations) requestAnimationFrame(renderCanvasFrame);
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function renderCanvasFrame() {
+            if (!CONFIG.animations) return;
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(148, 163, 184, ${p.alpha})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(renderCanvasFrame);
+        }
+
+        // TAMAMEN CANLI SÜREKLİ AKAN HESAPLAMA MOTORU
+        function startCalculationsEngine() {
+            const loop = () => {
+                const now = new Date();
+                
+                // Canlı Saat ve Tarih Alanı
+                document.getElementById('live-time').innerText = now.toLocaleTimeString('tr-TR');
+                document.getElementById('live-date').innerText = now.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+
+                const tytTarget = new Date(CONFIG.tytDate);
+                const aytTarget = new Date(CONFIG.aytDate);
+                const horizonStart = new Date(CONFIG.cycleStart);
+
+                // Ana Sayaç Kartlarının Güncellenmesi
+                updateExamBlock(tytTarget, horizonStart, now, 'tyt');
+                updateExamBlock(aytTarget, horizonStart, now, 'ayt');
+                
+                // Analiz Paneli Hesaplamaları
+                const diffTytMs = tytTarget - now;
+                if(diffTytMs > 0) {
+                    const totalSecs = Math.floor(diffTytMs / 1000);
+                    const totalMins = Math.floor(totalSecs / 60);
+                    const totalHours = Math.floor(totalMins / 60);
+                    const totalDays = Math.floor(totalHours / 24);
+                    const totalWeeks = Math.floor(totalDays / 7);
+                    
+                    const liveDaysExact = (diffTytMs / (1000 * 60 * 60 * 24));
+                    const totalMonths = (liveDaysExact / 30.43).toFixed(2);
+
+                    document.getElementById('m-days').innerText = totalDays;
+                    document.getElementById('m-weeks').innerText = totalWeeks;
+                    document.getElementById('m-months').innerText = totalMonths;
+                    document.getElementById('m-hours').innerText = totalHours.toLocaleString('tr-TR');
+                    document.getElementById('m-mins').innerText = totalMins.toLocaleString('tr-TR');
+                    document.getElementById('m-secs').innerText = totalSecs.toLocaleString('tr-TR');
+
+                    // Sekme Başlığı Güncelleme
+                    document.title = `TYT'ye ${totalDays} Gün Kaldı | YKS Sayaç 2027`;
+
+                    // Tamamen Canlı İstatistik ve Projeksiyon Akışı
+                    generateStudyRows(liveDaysExact);
+                    
+                    // Akıllı Projeksiyon Kartları Güncelleme
+                    document.getElementById('time-1w').innerText = Math.max(0, (liveDaysExact - 7).toFixed(2));
+                    document.getElementById('time-30d').innerText = Math.max(0, (liveDaysExact - 30).toFixed(2));
+                    document.getElementById('time-100d').innerText = Math.max(0, (liveDaysExact - 100).toFixed(2));
+                } else {
+                    document.title = "Sınav Başladı! Başarılar...";
+                }
+
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        }
+
+        function updateExamBlock(targetDate, startDate, currentDate, prefix) {
+            const totalDuration = targetDate - startDate;
+            const remainingDuration = targetDate - currentDate;
+            
+            if (remainingDuration <= 0) {
+                document.getElementById(`${prefix}-d`).innerText = "00";
+                document.getElementById(`${prefix}-h`).innerText = "00";
+                document.getElementById(`${prefix}-m`).innerText = "00";
+                document.getElementById(`${prefix}-s`).innerText = "00";
+                updateCircularProgress(prefix, 100);
+                return;
+            }
+
+            const secs = Math.floor(remainingDuration / 1000) % 60;
+            const mins = Math.floor(remainingDuration / (1000 * 60)) % 60;
+            const hours = Math.floor(remainingDuration / (1000 * 60 * 60)) % 24;
+            const days = Math.floor(remainingDuration / (1000 * 60 * 60 * 24));
+
+            document.getElementById(`${prefix}-d`).innerText = String(days).padStart(2, '0');
+            document.getElementById(`${prefix}-h`).innerText = String(hours).padStart(2, '0');
+            document.getElementById(`${prefix}-m`).innerText = String(mins).padStart(2, '0');
+            document.getElementById(`${prefix}-s`).innerText = String(secs).padStart(2, '0');
+
+            const elapsed = totalDuration - remainingDuration;
+            const percentComplete = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+            const percentRemaining = 100 - percentComplete;
+
+            updateCircularProgress(prefix, percentComplete);
+
+            if (prefix === 'tyt') {
+                document.getElementById('global-percent-val').innerText = `%${percentComplete.toFixed(4)} Tamamlandı`;
+                document.getElementById('global-bar-fill').style.width = `${percentComplete}%`;
+                
+                document.getElementById('m-p-comp').innerText = `%${percentComplete.toFixed(3)}`;
+                document.getElementById('m-p-rem').innerText = `%${percentRemaining.toFixed(3)}`;
+            }
+        }
+
+        function updateCircularProgress(prefix, percent) {
+            const ring = document.getElementById(`${prefix}-ring`);
+            const txt = document.getElementById(`${prefix}-ring-txt`);
+            const circumference = 201.06;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            ring.style.strokeDasharray = `${circumference} ${circumference}`;
+            ring.style.strokeDashoffset = offset;
+            txt.innerText = `%${percent.toFixed(2)}`;
+        }
+
+        function generateStudyRows(daysLeft) {
+            const targetContainer = document.getElementById('stats-table-body');
+            const models = [2, 4, 6, 8, 10];
+            let rawHtml = '';
+
+            models.forEach(hours => {
+                const absoluteHours = daysLeft * hours;
+                rawHtml += `<tr>
+                    <td>Günde <strong>${hours} Saat</strong> Çalışırsan</td>
+                    <td><span class="hours-badge">${absoluteHours.toFixed(5)} Saat</span> Sınav Konfor Alanı</td>
+                </tr>`;
+            });
+            targetContainer.innerHTML = rawHtml;
+        }
+
+        // --- INTELLIGENT MOTIVATION ENGINE (HOURLY SYNC & LOCAL REFRESH) ---
+        function initMotivationEngine() {
+            const savedIndex = localStorage.getItem('yks_ayet_index');
+            const lastUpdate = localStorage.getItem('yks_ayet_last_time');
+            const now = Date.now();
+            const oneHourMs = 60 * 60 * 1000;
+
+            if (savedIndex && lastUpdate && (now - parseInt(lastUpdate) < oneHourMs)) {
+                currentQuoteIndex = parseInt(savedIndex);
+                renderQuote();
+            } else {
+                // Saatlik süre dolmuş veya ilk açılış ise sıradaki ayete geç
+                if (savedIndex) {
+                    currentQuoteIndex = (parseInt(savedIndex) + 1) % SABIR_AYETLERI.length;
+                } else {
+                    currentQuoteIndex = 0;
+                }
+                localStorage.setItem('yks_ayet_index', currentQuoteIndex);
+                localStorage.setItem('yks_ayet_last_time', now);
+                renderQuote();
+            }
+
+            // Sayfa açık kaldığı sürece her dakikada bir saatlik sürenin dolup dolmadığını arka planda denetle
+            setInterval(() => {
+                const checkNow = Date.now();
+                const lastCheckTime = localStorage.getItem('yks_ayet_last_time') || 0;
+                if (checkNow - parseInt(lastCheckTime) >= oneHourMs) {
+                    shiftMotivationQuote(false);
+                }
+            }, 60000);
+        }
+
+        function shiftMotivationQuote(isManual = false) {
+            currentQuoteIndex = (currentQuoteIndex + 1) % SABIR_AYETLERI.length;
+            localStorage.setItem('yks_ayet_index', currentQuoteIndex);
+            localStorage.setItem('yks_ayet_last_time', Date.now());
+            
+            const txtEl = document.getElementById('motivation-text');
+            txtEl.style.opacity = '0';
+            txtEl.style.transform = 'translateY(5px)';
+            
+            setTimeout(() => {
+                renderQuote();
+                txtEl.style.opacity = '1';
+                txtEl.style.transform = 'translateY(0)';
+            }, 400);
+        }
+
+        function renderQuote() {
+            const txtEl = document.getElementById('motivation-text');
+            const data = SABIR_AYETLERI[currentQuoteIndex];
+            txtEl.innerHTML = `"${data.text}" <br><span style="display:block; margin-top:8px; font-size:13px; color:var(--text-muted); font-weight:500;">— ${data.ref}</span>`;
+        }
+    </script>
+</body>
+</html>
